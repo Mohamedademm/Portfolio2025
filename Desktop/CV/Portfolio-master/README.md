@@ -1,10 +1,10 @@
 <h2 align="center">
-  BEN AMARA Mohamed - Portfolio 2025<br/>
+  BEN AMARA Mohamed Adem - Portfolio 2026<br/>
   <a href="https://github.com/Mohamedademm" target="_blank">Full Stack Developer</a>
 </h2>
 
 <div align="center">
-  <img alt="Portfolio Preview" src="./Images/readme-img1.png" />
+  <img alt="Portfolio Preview" src="./Images/readme-img100.png" />
 </div>
 
 <br/>
