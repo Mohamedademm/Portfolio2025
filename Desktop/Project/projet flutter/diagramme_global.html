@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramme de Cas d'Utilisation Global - Projet Communication</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .instructions {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            color: #1565c0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Diagramme de Cas d'Utilisation Global</h1>
+        
+        <div class="mermaid">
+            usecaseDiagram
+    skinparam actorStyle awesome
+    
+    %% Acteurs
+    actor "Employé" as E
+    actor "Manager" as M
+    actor "Administrateur" as A
+
+    %% Package Système
+    package "Système de Communication & Gestion Dräxlmaier" {
+        
+        %% Cas Authentification
+        usecase "S'authentifier" as UC_Auth
+        
+        %% Cas Communication
+        usecase "Envoyer/Recevoir Messages" as UC_Msg
+        usecase "Gérer Profil & Statut" as UC_Profil
+        
+        %% Cas Objectifs
+        usecase "Consulter & Mettre à jour Objectifs" as UC_Obj_User
+        usecase "Créer & Assigner Objectifs" as UC_Obj_Man
+        usecase "Valider/Rejeter Objectifs" as UC_Valid
+        
+        %% Cas Localisation
+        usecase "Partager Localisation" as UC_Loc_User
+        usecase "Suivre Localisation Équipe" as UC_Loc_Team
+        
+        %% Cas Administration
+        usecase "Gérer Utilisateurs (CRUD)" as UC_Admin_User
+        usecase "Gérer Départements/Équipes" as UC_Admin_Struct
+        usecase "Valider Inscriptions" as UC_Admin_Sign
+        usecase "Gérer Paramètres Système" as UC_Admin_Config
+    }
+
+    %% Relations Employé
+    E --> UC_Auth
+    E --> UC_Msg
+    E --> UC_Profil
+    E --> UC_Obj_User
+    E --> UC_Loc_User
+
+    %% Relations Manager (Hérite Employé)
+    M -|> E
+    M --> UC_Obj_Man
+    M --> UC_Valid
+    M --> UC_Loc_Team
+
+    %% Relations Administrateur
+    A --> UC_Auth
+    A --> UC_Admin_User
+    A --> UC_Admin_Struct
+    A --> UC_Admin_Sign
+    A --> UC_Admin_Config
+
+    %% Dépendances (Includes)
+    UC_Msg ..> UC_Auth : <<include>>
+    UC_Obj_User ..> UC_Auth : <<include>>
+    UC_Admin_User ..> UC_Auth : <<include>>
+        </div>
+
+        <div class="instructions">
+            <strong>Comment sauvegarder :</strong><br>
+            Pour <strong>PDF</strong> : Faites <code>Ctrl + P</code> (Imprimer) > Choisir "Enregistrer au format PDF".<br>
+            Pour <strong>Image</strong> : Utilisez un outil de capture d'écran (Outil Capture Windows) pour sélectionner le diagramme.
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                edgeLabelBackground: '#ffffff',
+                tertiaryColor: '#f1f8e9'
+            },
+            flowchart: { curve: 'basis' }
+        });
+    </script>
+</body>
+</html>
