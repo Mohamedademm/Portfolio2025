@@ -1,0 +1,232 @@
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuthStore } from '../store/authStore'
+import api from '../services/api'
+import { Bus, Mail, Lock, User, CheckCircle, Loader2, Sparkles, Shield } from 'lucide-react'
+
+export default function Register() {
+  const navigate = useNavigate()
+  const login = useAuthStore((state) => state.login)
+  const [formData, setFormData] = useState({
+    nom: '',
+    prenom: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Les mots de passe ne correspondent pas')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const { confirmPassword, ...registerData } = formData
+      const response = await api.post('/auth/register', registerData)
+      const { user, token } = response.data.data
+      login(user, token)
+
+      // Show success animation
+      setSuccess(true)
+
+      // Navigate after animation
+      setTimeout(() => {
+        navigate('/')
+      }, 1500)
+    } catch (err) {
+      setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.message || 'Erreur d\'inscription')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 flex items-center justify-center p-4">
+      {/* Animated Background Particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute w-96 h-96 -top-48 -right-48 bg-brand-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute w-96 h-96 -bottom-48 -left-48 bg-brand-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute w-64 h-64 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/5 rounded-full blur-2xl animate-pulse delay-500"></div>
+      </div>
+
+      {/* Floating Icons */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Shield className="absolute top-20 right-20 w-8 h-8 text-white/10 animate-float" />
+        <Sparkles className="absolute top-40 left-32 w-6 h-6 text-white/10 animate-float delay-300" />
+        <Bus className="absolute bottom-32 left-20 w-10 h-10 text-white/10 animate-float delay-700" />
+      </div>
+
+      {/* Register Card */}
+      <div className={`
+        relative max-w-lg w-full backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8 
+        transform transition-all duration-700 ease-out
+        ${success ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}
+      `}>
+        {/* Success Overlay */}
+        {success && (
+          <div className="absolute inset-0 bg-green-500/90 backdrop-blur-sm rounded-2xl flex items-center justify-center z-50 animate-fade-in">
+            <div className="text-center animate-scale-in">
+              <CheckCircle className="w-20 h-20 text-white mx-auto mb-4 animate-bounce" />
+              <h3 className="text-2xl font-bold text-white">Inscription réussie !</h3>
+              <p className="text-white/90 mt-2">Bienvenue dans IBDTNS</p>
+            </div>
+          </div>
+        )}
+
+        {/* Logo & Title */}
+        <div className="text-center mb-6 animate-slide-down">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-4 animate-float">
+            <Bus className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Créer un compte</h1>
+          <p className="text-white/80 text-sm">Rejoignez le système IBDTNS</p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 animate-slide-up">
+          {/* Name Fields */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="group">
+              <label className="block text-sm font-medium text-white/90 mb-2">
+                Nom
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50 group-focus-within:text-white transition-colors" />
+                <input
+                  type="text"
+                  required
+                  className="w-full pl-11 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:bg-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/20 transition-all outline-none"
+                  placeholder="Nom"
+                  value={formData.nom}
+                  onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="group">
+              <label className="block text-sm font-medium text-white/90 mb-2">
+                Prénom
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50 group-focus-within:text-white transition-colors" />
+                <input
+                  type="text"
+                  required
+                  className="w-full pl-11 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:bg-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/20 transition-all outline-none"
+                  placeholder="Prénom"
+                  value={formData.prenom}
+                  onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Email Field */}
+          <div className="group">
+            <label className="block text-sm font-medium text-white/90 mb-2">
+              Email
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50 group-focus-within:text-white transition-colors" />
+              <input
+                type="email"
+                required
+                className="w-full pl-11 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:bg-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/20 transition-all outline-none"
+                placeholder="votre@email.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
+            </div>
+          </div>
+
+          {/* Password Field */}
+          <div className="group">
+            <label className="block text-sm font-medium text-white/90 mb-2">
+              Mot de passe
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50 group-focus-within:text-white transition-colors" />
+              <input
+                type="password"
+                required
+                className="w-full pl-11 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:bg-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/20 transition-all outline-none"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              />
+            </div>
+            <p className="text-xs text-white/60 mt-1.5 ml-1">
+              8+ caractères, majuscule, minuscule, chiffre et caractère spécial
+            </p>
+          </div>
+
+          {/* Confirm Password Field */}
+          <div className="group">
+            <label className="block text-sm font-medium text-white/90 mb-2">
+              Confirmer le mot de passe
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50 group-focus-within:text-white transition-colors" />
+              <input
+                type="password"
+                required
+                className="w-full pl-11 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:bg-white/20 focus:border-white/40 focus:ring-2 focus:ring-white/20 transition-all outline-none"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              />
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-500/20 backdrop-blur-sm border border-red-500/30 text-white px-4 py-3 rounded-xl text-sm animate-shake">
+              {error}
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-white text-brand-700 py-3 px-4 rounded-xl font-semibold hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Inscription en cours...</span>
+              </>
+            ) : (
+              'S\'inscrire'
+            )}
+          </button>
+        </form>
+
+        {/* Login Link */}
+        <p className="mt-6 text-center text-sm text-white/80 animate-fade-in delay-200">
+          Déjà un compte?{' '}
+          <Link to="/login" className="text-white font-semibold hover:underline transition-all">
+            Se connecter
+          </Link>
+        </p>
+
+        {/* Decorative Elements */}
+        <div className="absolute -bottom-2 -left-2 w-32 h-32 bg-gradient-to-br from-brand-400/20 to-transparent rounded-full blur-2xl"></div>
+        <div className="absolute -top-2 -right-2 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-2xl"></div>
+      </div>
+
+      {/* Footer */}
+      <div className="absolute bottom-4 left-0 right-0 text-center text-white/60 text-xs animate-fade-in delay-500">
+        © 2026 IBDTNS - Tous droits réservés
+      </div>
+    </div>
+  )
+}
